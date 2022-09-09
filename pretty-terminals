@@ -18,8 +18,8 @@ setup_termux()
         exit 1
 
     apt full-upgrade -y && \
-        apt install -y "zsh tigervnc vim git xfce4 kitty thunar \
-                        leafpad netsurf proot-distro iproute2 make nala"
+        apt install -y zsh tigervnc vim git xfce4 kitty thunar \
+                        leafpad netsurf proot-distro iproute2 make nala
 
     [ ! -d "${HOME}/.oh-my-zsh" ] && \
         curl -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh" | "${SHELL}"
@@ -31,7 +31,7 @@ setup_termux()
                 omz theme set powerlevel10k/powerlevel10k && \
                 chsh -s zsh `whoami`"
 
-    find .config/*.sh -type f -exec install -Dm 644 {} "${PREFIX}/etc/profile.d/" \;
+    find config/etc/profile.d/*.sh -type f -exec install -Dm 644 {} "${PREFIX}/etc/profile.d/" \;
 
     return $?
 }
