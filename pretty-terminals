@@ -17,6 +17,8 @@ setup_termux()
         echo ":: ERROR: termux is not installed" && \
         exit 1
 
+    apt install -y x11-repo
+
     apt full-upgrade -y && \
         apt install -y zsh tigervnc vim git xfce4 kitty thunar \
                         leafpad netsurf proot-distro iproute2 make nala
