@@ -1,5 +1,5 @@
 alias ls='ls --color=auto'
-alias ll='ls -alih'
+alias ll='ls -alih --color=auto'
 
 alias ipkg='nala install'
 alias ppkg='nala purge --autoremove'
