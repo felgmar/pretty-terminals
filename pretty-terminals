@@ -1,41 +1,71 @@
 #!/bin/sh
+set -e
+
+install_zsh()
+{
+    for p in curl zsh git
+    do
+        test ! -x `command -v $p` && \
+            echo "Error: $p: no such file was found" && \
+	        exit 1
+    done
+
+    if test ! -d "$HOME/.oh-my-zsh"
+    then
+        curl -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh" | $SHELL
+    else
+        echo "Oh My Zsh is already installed"
+        read -p "Do you want to reinstall it? [Y/N]: " reinstallOmz
+        case $reinstallOmz in
+            [Yy]*)
+                find $HOME/.oh-my-zsh -exec rm -rfv {} \; && \
+                find $HOME/.zshrc -exec rm -v {} \; && \
+                    curl -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh" | $SHELL
+            ;;
+            *) break;;
+        esac
+    fi
+
+    if test ! -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k"
+    then
+        zsh -c "source $HOME/.zshrc && \
+                git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+                    ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k && \
+                omz theme set powerlevel10k/powerlevel10k && \
+                chsh -s /bin/zsh `whoami`"
+    fi
+
+    return $?
+}
 
 setup_termux()
 {
-    test "${PREFIX}" != "/data/data/com.termux/files/usr" && \
+    install_zsh || return 1
+
+    test "$PREFIX" != "/data/data/com.termux/files/usr" && \
         echo ":: ERROR: you are not using Android/Termux" && \
-        exit 1
+            exit 1
 
     test ! -d "/data/data/com.termux/files/usr" && \
         echo ":: ERROR: termux is not installed" && \
         exit 1
+
+    termux-change-repo || return 1
 
     apt install -y x11-repo
 
     apt full-upgrade -y && \
         apt install -y zsh tigervnc vim git xfce4 kitty thunar \
                         leafpad netsurf proot-distro iproute2 make nala
-
-    if test ! -d "${HOME}/.oh-my-zsh"
-    then
-        curl -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh" | "${SHELL}"
-
-    elif test ! -d "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k"
-    then
-        zsh -c "source ${HOME}/.zshrc && \
-                git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-                    ${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k && \
-                omz theme set powerlevel10k/powerlevel10k && \
-                chsh -s zsh `whoami`"
-    fi
-
-    find config/etc/profile.d/*.sh -type f -exec install -Dm 644 {} "${PREFIX}/etc/profile.d/" \;
+    find config/etc/profile.d/*.sh -type f -exec install -Dm 644 {} "$PREFIX/etc/profile.d/" \;
 
     return $?
 }
 
 setup_kitty()
 {
+    install_zsh || return 1
+
     for f in curl kitty zsh
     do
         if test ! -x "`command -v $f`"
@@ -44,21 +74,19 @@ setup_kitty()
         fi
     done
 
-    test ! -d "${HOME}/.config/kitty" && mkdir "${HOME}/.config/kitty"
+    test ! -d "${HOME}/.config/kitty" && mkdir -v "${HOME}/.config/kitty"
 
     test ! -f "${HOME}/.config/kitty/kitty.conf" && \
-        cp "config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
+        cp -v "config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
 
-    test ! -d "${HOME}/.fonts" && mkdir $HOME/fonts
-
-    jumpback=`pwd`
-    cd "$HOME/.fonts"
-    curl -fsSLO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-    curl -fsSLO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-    curl -fsSLO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-    curl -fsSLO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-    curl -fsSLO https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
-    cd $jumpback && unset $jumpback
+    for f in MesloLGS%20NF%20Regular.ttf \
+             MesloLGS%20NF%20Bold.ttf \
+             MesloLGS%20NF%20Italic.ttf \
+             MesloLGS%20NF%20Bold%20Italic.ttf
+    do
+        wget -nc -P $HOME/.fonts --https-only \
+             https://github.com/romkatv/powerlevel10k-media/raw/master/$f
+    done
 
     if test ! -d "${HOME}/.oh-my-zsh"
     then
@@ -79,12 +107,14 @@ setup_kitty()
 
 setup_xterm()
 {
+    install_zsh || return 1
+
     if test ! -x "`command -v xterm`"
     then
         echo "Please install XTerm and try again" && exit 1
     elif test ! -f "${HOME}/.Xresources"
     then
-        cp ".config/xterm-settings" "${HOME}/.Xresources"
+        cp -v ".config/xterm-settings" "${HOME}/.Xresources"
     fi
 
     xrdb -merge "${HOME}/.Xresources"
@@ -106,4 +136,6 @@ case $TERMINAL_TYPE in
     termux) setup_termux;;
     kitty) setup_kitty;;
     xterm) setup_xterm;;
+    *) echo "Error: $TERMINAL_TYPE: unknown type of terminal";;
 esac
+
