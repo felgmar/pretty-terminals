@@ -59,6 +59,8 @@ setup_termux()
                         leafpad netsurf proot-distro iproute2 make nala
     find config/etc/profile.d/*.sh -type f -exec install -Dm 644 {} "$PREFIX/etc/profile.d/" \;
 
+    chsh -s zsh
+
     return $?
 }
 
