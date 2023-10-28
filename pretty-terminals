@@ -20,9 +20,7 @@ install_zsh()
         read -p "Do you want to reinstall it? [Y/N]: " reinstallOmz
         case $reinstallOmz in
             [Yy]*)
-                find $HOME/.oh-my-zsh -exec rm -rfv {} \; && \
-                find $HOME/.zshrc -exec rm -v {} \; && \
-                    curl -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh" | $SHELL
+                curl -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/uninstall.sh" | $SHELL
             ;;
             *) break;;
         esac
