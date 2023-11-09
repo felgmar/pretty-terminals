@@ -83,30 +83,8 @@ setup_kitty()
              MesloLGS%20NF%20Italic.ttf \
              MesloLGS%20NF%20Bold%20Italic.ttf
     do
-        wget -nc -P $HOME/.fonts --https-only \
-             https://github.com/romkatv/powerlevel10k-media/raw/master/$f
+        curl --progress-bar -o "$HOME/.fonts/$f" -s https://github.com/romkatv/powerlevel10k-media/raw/master/$f
     done
-
-    test $? -eq 0 && echo "success" || echo "failure"
-
-    return $?
-}
-
-setup_xterm()
-{
-    install_zsh || return 1
-
-    if test ! -x "$(command -v xterm)"
-    then
-        echo "Please install XTerm and try again" && exit 1
-    elif test ! -f "${HOME}/.Xresources"
-    then
-        cp -v ".config/xterm-settings" "${HOME}/.Xresources"
-    fi
-
-    xrdb -merge "${HOME}/.Xresources"
-
-    test $? -eq 0 && echo "success" || echo "failure"
 
     return $?
 }
@@ -128,7 +106,6 @@ fi
 case $TERMINAL_TYPE in
     termux) setup_termux;;
     kitty) setup_kitty;;
-    xterm) setup_xterm;;
     *) echo "Error: $TERMINAL_TYPE: unknown type of terminal";;
 esac
 
