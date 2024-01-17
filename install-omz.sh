@@ -1,4 +1,4 @@
-ZSH_SHELL="$(command -z zsh)"
+ZSH_SHELL="$(command -v zsh)"
 OMZ_TOOLS_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/"
 OMZ_INSTALL_TOOL="${OMZ_TOOLS_URL}/install.sh"
 OMZ_UNINSTALL_TOOL="${OMZ_TOOLS_URL}/uninstall.sh"
