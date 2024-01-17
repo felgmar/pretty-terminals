@@ -3,6 +3,20 @@ OMZ_TOOLS_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/"
 OMZ_INSTALL_TOOL="${OMZ_TOOLS_URL}/install.sh"
 OMZ_UNINSTALL_TOOL="${OMZ_TOOLS_URL}/uninstall.sh"
 
+check_dependencies()
+{
+    for f in zsh wget curl
+    do
+        if test ! -z $f
+        then
+            echo "error: $f: not found"
+            exit 1
+        else
+            echo "found: $f"
+        fi
+    done
+}
+
 install_p10k()
 {
     if test ! -d "${HOME}/.oh-my-zsh"
@@ -49,4 +63,9 @@ getomz()
     esac
 }
 
-getomz && install_p10k
+case $1 in
+    "install") check_dependencies && getomz install && install_p10k;;
+    "uninstall") check_dependencies && getomz uninstall;;
+    *) exit 1;;
+esac
+
