@@ -7,7 +7,7 @@ check_dependencies()
 {
     for f in zsh wget curl
     do
-        if test ! -z $f
+        if test ! -x $(command -v $f)
         then
             echo "error: $f: not found"
             exit 1
@@ -52,7 +52,7 @@ getomz()
         ;;
         "reinstall")
             curl -L "${OMZ_UNINSTALL_TOOL}" | "${ZSH_SHELL}" && \
-            curl -L "${OMZ_UNINSTALL_TOOL}" | "${ZSH_SHELL}"
+            curl -L "${OMZ_INSTALL_TOOL}" | "${ZSH_SHELL}"
         ;;
         "uninstall")
             curl -L "${OMZ_UNINSTALL_TOOL}" | "${ZSH_SHELL}"

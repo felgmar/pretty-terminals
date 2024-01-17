@@ -1,20 +1,6 @@
 #!/bin/sh
 set -e
 
-install_zsh()
-{
-    for p in curl zsh git
-    do
-        if test ! -x $(command -v $p)
-        then
-            echo "Error: $p: no such file was found"
-	    exit 1
-        fi
-    done
-
-    ./install-omz.sh install
-}
-
 setup_termux()
 {
     test "$PREFIX" != "/data/data/com.termux/files/usr" && \
@@ -81,8 +67,8 @@ then
 fi
 
 case $TERMINAL_TYPE in
-    termux) setup_termux;;
-    kitty) setup_kitty;;
+    termux) ./install-omz.sh install && setup_termux;;
+    kitty) ./install-omz.sh install && setup_kitty;;
     *) echo "Error: $TERMINAL_TYPE: unknown type of terminal";;
 esac
 
