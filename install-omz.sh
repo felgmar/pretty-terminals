@@ -47,25 +47,16 @@ getomz()
     fi
 
     case "$1" in
-        "install")
-            curl -L "${OMZ_INSTALL_TOOL}" | "${ZSH_SHELL}"
-        ;;
-        "reinstall")
-            curl -L "${OMZ_UNINSTALL_TOOL}" | "${ZSH_SHELL}" && \
-            curl -L "${OMZ_INSTALL_TOOL}" | "${ZSH_SHELL}"
-        ;;
-        "uninstall")
-            curl -L "${OMZ_UNINSTALL_TOOL}" | "${ZSH_SHELL}"
-        ;;
-        *)
-            echo "error: $1: unknown command"
-        ;;
+        install) sh -c "$(curl -fsSL ${OMZ_INSTALL_TOOL})";;
+        uninstall) sh -c "$(curl -fsSL ${OMZ_UNINSTALL_TOOL})";;
+        reinstall) sh -c "$(curl -fsSL ${OMZ_INSTALL_TOOL})";;
+        *) echo "error: $1: unknown command";;
     esac
 }
 
 case $1 in
-    "install") check_dependencies && getomz install && install_p10k;;
-    "uninstall") check_dependencies && getomz uninstall;;
+    install) check_dependencies && getomz install && install_p10k;;
+    uninstall) check_dependencies && getomz uninstall;;
     *) exit 1;;
 esac
 
