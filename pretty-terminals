@@ -11,8 +11,6 @@ setup_termux()
         echo ":: ERROR: termux is not installed" && \
         exit 1
 
-    install_zsh || return 1
-
     termux-change-repo || return 1
 
     apt install -y x11-repo
@@ -29,8 +27,6 @@ setup_termux()
 
 setup_kitty()
 {
-    install_zsh || return 1
-
     if test ! -d "${HOME}/.config/kitty"
     then
         mkdir -v "${HOME}/.config/kitty"
@@ -41,16 +37,24 @@ setup_kitty()
         cp -v "config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
     fi
 
+    ./install-omz.sh install || continue
+
     for f in MesloLGS%20NF%20Regular.ttf \
              MesloLGS%20NF%20Bold.ttf \
              MesloLGS%20NF%20Italic.ttf \
              MesloLGS%20NF%20Bold%20Italic.ttf
     do
-        wget -NP "$HOME/.fonts" https://github.com/romkatv/powerlevel10k-media/raw/master/$f
+        wget -NP "$HOME/.fonts" "https://github.com/romkatv/powerlevel10k-media/raw/master/$f"
     done
 
     return $?
 }
+
+if test -z $1
+then
+    echo "Usage: $0 [-t TERMINAL_TYPE]"
+    exit 1
+fi
 
 while getopts 't:' arg
 do
@@ -67,8 +71,8 @@ then
 fi
 
 case $TERMINAL_TYPE in
-    termux) ./install-omz.sh install && setup_termux;;
-    kitty) ./install-omz.sh install && setup_kitty;;
+    termux) setup_termux;;
+    kitty) setup_kitty;;
     *) echo "Error: $TERMINAL_TYPE: unknown type of terminal";;
 esac
 

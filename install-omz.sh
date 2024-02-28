@@ -7,22 +7,20 @@ check_dependencies()
 {
     for f in zsh wget curl
     do
-        if test ! -x $(command -v $f)
+        if test ! -x "$(command -v $f)"
         then
             echo "error: $f: not found"
             exit 1
-        else
-            echo "found: $f"
         fi
     done
 }
 
 install_p10k()
 {
-    if test ! -d "${HOME}/.oh-my-zsh"
+    if test ! -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
     then
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-            ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+            "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
     fi
 
     if test -f "${HOME}/.zshrc"
@@ -32,7 +30,7 @@ install_p10k()
 
     if test ! -z "$(omz theme list | grep powerlevel10k/powerlevel10k)"
     then
-        omz theme set "powerlevel10k/powerlevel10k"
+        "$(command -v zsh)" -c "source $HOME/.zshrc && omz theme set powerlevel10k/powerlevel10k"
     else
         echo "omz: powerlevel10k/powerlevel10k: theme not found"
     fi
@@ -59,4 +57,3 @@ case $1 in
     uninstall) check_dependencies && getomz uninstall;;
     *) exit 1;;
 esac
-
