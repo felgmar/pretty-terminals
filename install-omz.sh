@@ -30,7 +30,7 @@ install_p10k()
 
     if test ! -z "$(omz theme list | grep powerlevel10k/powerlevel10k)"
     then
-        "$(command -v zsh)" -c "source $HOME/.zshrc && omz theme set powerlevel10k/powerlevel10k"
+        "$(command -v zsh)" -c "source ${HOME}/.zshrc && omz theme set powerlevel10k/powerlevel10k"
     else
         echo "omz: powerlevel10k/powerlevel10k: theme not found"
     fi
@@ -53,7 +53,11 @@ getomz()
 }
 
 case $1 in
-    install) check_dependencies && getomz install && install_p10k;;
+    install)
+        check_dependencies || exit 1
+        getomz install
+        install_p10k || exit 1
+    ;;
     uninstall) check_dependencies && getomz uninstall;;
     *) exit 1;;
 esac

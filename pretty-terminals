@@ -37,7 +37,7 @@ setup_kitty()
         cp -v "config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
     fi
 
-    ./install-omz.sh install || continue
+    ./install-omz.sh install
 
     for f in MesloLGS%20NF%20Regular.ttf \
              MesloLGS%20NF%20Bold.ttf \
