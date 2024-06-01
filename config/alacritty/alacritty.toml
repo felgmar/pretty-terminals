@@ -1,0 +1,9 @@
+import = [
+    "~/.config/alacritty/window.toml",
+    "~/.config/alacritty/font.toml",
+    "~/.config/alacritty/colors.toml",
+    "~/.config/alacritty/mouse"
+]
+
+live_config_reload = true
+

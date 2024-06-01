@@ -50,6 +50,21 @@ setup_kitty()
     return $?
 }
 
+setup_alacritty()
+{
+    if test ! -d "${HOME}/.config/alacritty"
+    then
+        mkdir -v "${HOME}/.config/alacritty"
+    fi
+
+    if test ! -d "${HOME}/.config/alacritty"
+    then
+        cp -rv "config/alacritty" "${HOME}/.config"
+    fi
+
+    return $?
+}
+
 if test -z $1
 then
     echo "Usage: $0 [-t TERMINAL_TYPE]"
@@ -58,21 +73,21 @@ fi
 
 while getopts 't:' arg
 do
-    case $arg in
+    case "$arg" in
         t) TERMINAL_TYPE=$OPTARG;;
         ?) echo "Usage: ${0} [-t TERMINAL_TYPE]"; exit $?;;
     esac
 done
 
-if test -z $TERMINAL_TYPE
+if test -z "${TERMINAL_TYPE}"
 then
     echo "Usage: ${0} [-t TERMINAL_TYPE]"
     exit 1
 fi
 
-case $TERMINAL_TYPE in
-    termux) setup_termux;;
-    kitty) setup_kitty;;
-    *) echo "Error: $TERMINAL_TYPE: unknown type of terminal";;
+case "${TERMINAL_TYPE}" in
+    "termux")       setup_termux;;
+    "kitty")        setup_kitty;;
+    "alacritty")  setup_alacritty;;
+    *) echo "Error: ${TERMINAL_TYPE}: unknown type of terminal";;
 esac
-

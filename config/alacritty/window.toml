@@ -1,0 +1,5 @@
+[window]
+decorations        = "None"
+opacity            = 0.6
+blur               = true
+startup_mode       = "Maximized"
