@@ -1,0 +1,70 @@
+DEFAULT_USER_SHELL="$(echo ${SHELL})"
+ZSH_SHELL="$(command -v zsh)"
+OMZ_TOOLS_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/"
+OMZ_INSTALL_TOOL="${OMZ_TOOLS_URL}/install.sh"
+OMZ_UNINSTALL_TOOL="${OMZ_TOOLS_URL}/uninstall.sh"
+
+check_dependencies()
+{
+    for bin in zsh wget curl
+    do
+        bin_path="$(command -v ${bin})"
+        if test -x "${bin_path}"
+        then
+            echo "[*] ${bin} found at: ${bin_path}"
+        else
+            echo "[!] ${bin} not found"
+        fi
+    done
+
+    return $?
+}
+
+install_zsh_theme()
+{
+    if test -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+    then
+        echo "warning: powerlevel10k is already installed"
+        return 1
+    fi
+
+    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+
+    if test -f "${HOME}/.zshrc"
+    then
+        eval source "${HOME}/.zshrc" || exit 1
+
+        if test "${ZSH_THEME}" != "powerlevel10k/powerlevel10k"
+        then
+            "${ZSH_SHELL}" -c "source ${HOME}/.zshrc && omz theme set powerlevel10k/powerlevel10k; exit $?"
+        fi
+    else
+        echo "warning: the zsh theme of Oh My Zsh is already set to powerlevel10k/powerlevel10k"
+    fi
+
+    return $?
+}
+
+getomz()
+{
+    if test -z "$1"
+    then
+        echo "getomz: nothing to do"
+        exit 1
+    fi
+
+    case "$1" in
+        "install")   "${DEFAULT_USER_SHELL}" -c "$(curl -fsSL ${OMZ_INSTALL_TOOL})";;
+        "uninstall") "${DEFAULT_USER_SHELL}" -c "$(curl -fsSL ${OMZ_UNINSTALL_TOOL})";;
+        "reinstall") "${DEFAULT_USER_SHELL}" -c "$(curl -fsSL ${OMZ_INSTALL_TOOL})";;
+        *) echo "error: $1: unknown command";;
+    esac
+
+    return $?
+}
+
+case "$1" in
+    install)   check_dependencies; getomz install; install_zsh_theme;;
+    uninstall) check_dependencies; getomz uninstall;;
+    *) exit 1;;
+esac
