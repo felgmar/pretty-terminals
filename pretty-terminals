@@ -59,7 +59,7 @@ setup_alacritty()
 
     if test ! -d "${HOME}/.config/alacritty"
     then
-        cp -rv "config/alacritty" "${HOME}/.config"
+        cp --no-preserve=all -rv "config/alacritty" "${HOME}/.config"
     fi
 
     return $?
@@ -67,7 +67,7 @@ setup_alacritty()
 
 if test -z $1
 then
-    echo "Usage: $0 [-t TERMINAL_TYPE]"
+    echo "Usage: ${0} [-t TERMINAL_TYPE]"
     exit 1
 fi
 
@@ -75,7 +75,7 @@ while getopts 't:' arg
 do
     case "$arg" in
         t) TERMINAL_TYPE=$OPTARG;;
-        ?) echo "Usage: ${0} [-t TERMINAL_TYPE]"; exit $?;;
+        ?) echo "error: $arg: invalid argument"; exit $?;;
     esac
 done
 
@@ -88,6 +88,6 @@ fi
 case "${TERMINAL_TYPE}" in
     "termux")       setup_termux;;
     "kitty")        setup_kitty;;
-    "alacritty")  setup_alacritty;;
+    "alacritty")    setup_alacritty;;
     *) echo "Error: ${TERMINAL_TYPE}: unknown type of terminal";;
 esac

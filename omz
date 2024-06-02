@@ -1,3 +1,5 @@
+#!/bin/sh
+
 DEFAULT_USER_SHELL="$(echo ${SHELL})"
 ZSH_SHELL="$(command -v zsh)"
 OMZ_TOOLS_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/"
@@ -63,8 +65,14 @@ getomz()
     return $?
 }
 
+if test -z "$1"
+then
+    echo "Valid arguments are: install, uninstall"
+    exit 1
+fi
+
 case "$1" in
-    install)   check_dependencies; getomz install; install_zsh_theme;;
-    uninstall) check_dependencies; getomz uninstall;;
-    *) exit 1;;
+    "install")   check_dependencies; getomz install; install_zsh_theme;;
+    "uninstall") check_dependencies; getomz uninstall;;
+    *) echo "error: $1: invalid argument"; exit 1;;
 esac
