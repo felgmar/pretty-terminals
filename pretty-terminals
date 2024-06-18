@@ -1,26 +1,49 @@
 #!/bin/sh
 set -e
 
+help()
+{
+    echo "Usage: ${0} [-t TERMINAL_TYPE]"
+    return 0
+}
+
+install_meslo_font()
+{
+    for f in MesloLGS%20NF%20Regular.ttf \
+             MesloLGS%20NF%20Bold.ttf \
+             MesloLGS%20NF%20Italic.ttf \
+             MesloLGS%20NF%20Bold%20Italic.ttf
+    do
+        wget -NP "$HOME/.fonts" "https://github.com/romkatv/powerlevel10k-media/raw/master/$f"
+    done
+}
+
 setup_termux()
 {
-    test "$PREFIX" != "/data/data/com.termux/files/usr" && \
-        echo ":: ERROR: you are not using Android/Termux" && \
-            exit 1
+    if test ! "${PREFIX}" = "/data/data/com.termux/files/usr"
+    then
+        echo ":: ERROR: you are not using Android/Termux"
+        return 1
+    fi
 
-    test ! -d "/data/data/com.termux/files/usr" && \
-        echo ":: ERROR: termux is not installed" && \
-        exit 1
+    if test ! -d "/data/data/com.termux/files/usr"
+    then
+        echo ":: ERROR: termux is not installed"
+        return 1
+    fi
 
     termux-change-repo || return 1
 
-    apt install -y x11-repo
+    apt install -y x11-repo && \
+        apt full-upgrade -y && \
+        apt install -y zsh tigervnc vim git xfce4 kitty thunar leafpad netsurf proot-distro iproute2 make nala
 
-    apt full-upgrade -y && \
-        apt install -y zsh tigervnc vim git xfce4 kitty thunar \
-                        leafpad netsurf proot-distro iproute2 make nala
-    find config/etc/profile.d/*.sh -type f -exec install -Dm 644 {} "$PREFIX/etc/profile.d/" \;
+    for f in config/etc/profile.d/*.sh
+    do
+        install -Dm 644 {} "${PREFIX}/etc/profile.d/$(basename $f)"
+    done
 
-    chsh -s zsh
+    sudo usermod -s "$(command -v zsh)" "$(whoami)"
 
     return $?
 }
@@ -29,23 +52,10 @@ setup_kitty()
 {
     if test ! -d "${HOME}/.config/kitty"
     then
-        mkdir -v "${HOME}/.config/kitty"
+        install --compare -D --mode 644 "config/kitty" "${HOME}/.config"
     fi
 
-    if test ! -f "${HOME}/.config/kitty/kitty.conf"
-    then
-        cp -v "config/kitty/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
-    fi
-
-    ./install-omz.sh install
-
-    for f in MesloLGS%20NF%20Regular.ttf \
-             MesloLGS%20NF%20Bold.ttf \
-             MesloLGS%20NF%20Italic.ttf \
-             MesloLGS%20NF%20Bold%20Italic.ttf
-    do
-        wget -NP "$HOME/.fonts" "https://github.com/romkatv/powerlevel10k-media/raw/master/$f"
-    done
+    "${SHELL}" -c "./omz install"
 
     return $?
 }
@@ -54,40 +64,30 @@ setup_alacritty()
 {
     if test ! -d "${HOME}/.config/alacritty"
     then
-        mkdir -v "${HOME}/.config/alacritty"
+        install --compare -D --mode 644 "config/alacritty" "${HOME}/.config"
     fi
 
-    if test ! -d "${HOME}/.config/alacritty"
-    then
-        cp --no-preserve=all -rv "config/alacritty" "${HOME}/.config"
-    fi
+    ./omz install
 
     return $?
 }
-
-if test -z $1
-then
-    echo "Usage: ${0} [-t TERMINAL_TYPE]"
-    exit 1
-fi
 
 while getopts 't:' arg
 do
     case "$arg" in
         t) TERMINAL_TYPE=$OPTARG;;
-        ?) echo "error: $arg: invalid argument"; exit $?;;
+        ?) echo "error: $arg: invalid argument"; help;;
     esac
 done
 
 if test -z "${TERMINAL_TYPE}"
 then
-    echo "Usage: ${0} [-t TERMINAL_TYPE]"
-    exit 1
+    help
+else
+    case "${TERMINAL_TYPE}" in
+        "termux")       install_meslo_font && setup_termux;;
+        "kitty")        install_meslo_font && setup_kitty;;
+        "alacritty")    install_meslo_font && setup_alacritty;;
+        *) echo "error: ${TERMINAL_TYPE}: unknown type of terminal";;
+    esac
 fi
-
-case "${TERMINAL_TYPE}" in
-    "termux")       setup_termux;;
-    "kitty")        setup_kitty;;
-    "alacritty")    setup_alacritty;;
-    *) echo "Error: ${TERMINAL_TYPE}: unknown type of terminal";;
-esac
