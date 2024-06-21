@@ -14,7 +14,7 @@ install_meslo_font()
              MesloLGS%20NF%20Italic.ttf \
              MesloLGS%20NF%20Bold%20Italic.ttf
     do
-        wget -NP "$HOME/.fonts" "https://github.com/romkatv/powerlevel10k-media/raw/master/$f"
+        wget -NP "$HOME/local/share/.fonts" "https://github.com/romkatv/powerlevel10k-media/raw/master/$f"
     done
 }
 
@@ -52,7 +52,7 @@ setup_kitty()
 {
     if test ! -d "${HOME}/.config/kitty"
     then
-        install --compare -D --mode 644 "config/kitty" "${HOME}/.config"
+        cp -rv --no-preserve=all "config/kitty" "${HOME}/.config"
     fi
 
     "${SHELL}" -c "./omz install"
@@ -64,7 +64,7 @@ setup_alacritty()
 {
     if test ! -d "${HOME}/.config/alacritty"
     then
-        install --compare -D --mode 644 "config/alacritty" "${HOME}/.config"
+        cp -rv --no-preserve=all "config/alacritty" "${HOME}/.config"
     fi
 
     ./omz install
