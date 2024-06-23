@@ -1,7 +1,7 @@
 [window]
 decorations        = "None"
-opacity            = 0.6
-blur               = true
+opacity            = 0.9
+blur               = false
 startup_mode       = "Maximized"
 
 [window.padding]
