@@ -7,17 +7,6 @@ help()
     return 0
 }
 
-install_meslo_font()
-{
-    for f in MesloLGS%20NF%20Regular.ttf \
-             MesloLGS%20NF%20Bold.ttf \
-             MesloLGS%20NF%20Italic.ttf \
-             MesloLGS%20NF%20Bold%20Italic.ttf
-    do
-        wget -NP "$HOME/local/share/.fonts" "https://github.com/romkatv/powerlevel10k-media/raw/master/$f"
-    done
-}
-
 setup_termux()
 {
     if test ! "${PREFIX}" = "/data/data/com.termux/files/usr"
@@ -85,9 +74,9 @@ then
     help
 else
     case "${TERMINAL_TYPE}" in
-        "termux")       install_meslo_font && setup_termux;;
-        "kitty")        install_meslo_font && setup_kitty;;
-        "alacritty")    install_meslo_font && setup_alacritty;;
+        "termux")       setup_termux;;
+        "kitty")        setup_kitty;;
+        "alacritty")    setup_alacritty;;
         *) echo "error: ${TERMINAL_TYPE}: unknown type of terminal";;
     esac
 fi
