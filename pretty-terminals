@@ -11,13 +11,13 @@ setup_termux()
 {
     if test ! "${PREFIX}" = "/data/data/com.termux/files/usr"
     then
-        echo ":: ERROR: you are not using Android/Termux"
+        echo "error: you are not using Android/Termux"
         return 1
     fi
 
     if test ! -d "/data/data/com.termux/files/usr"
     then
-        echo ":: ERROR: termux is not installed"
+        echo "error: termux is not installed"
         return 1
     fi
 
@@ -29,7 +29,7 @@ setup_termux()
 
     for f in config/etc/profile.d/*.sh
     do
-        install -Dm 644 {} "${PREFIX}/etc/profile.d/$(basename $f)"
+        install -Dm 644 ${f} "${PREFIX}/etc/profile.d/$(basename $f)"
     done
 
     sudo usermod -s "$(command -v zsh)" "$(whoami)"
@@ -56,16 +56,16 @@ setup_alacritty()
         cp -rv --no-preserve=all "config/alacritty" "${HOME}/.config"
     fi
 
-    ./omz install
+    "${SHELL}" "./omz install"
 
     return $?
 }
 
 while getopts 't:' arg
 do
-    case "$arg" in
-        t) TERMINAL_TYPE=$OPTARG;;
-        ?) echo "error: $arg: invalid argument"; help;;
+    case "${arg}" in
+        't') TERMINAL_TYPE=$OPTARG;;
+        '?') echo "error: ${arg}: invalid argument"; help;;
     esac
 done
 
@@ -77,6 +77,6 @@ else
         "termux")       setup_termux;;
         "kitty")        setup_kitty;;
         "alacritty")    setup_alacritty;;
-        *) echo "error: ${TERMINAL_TYPE}: unknown type of terminal";;
+        *)              echo "error: ${TERMINAL_TYPE}: unknown type of terminal";;
     esac
 fi
