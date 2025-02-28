@@ -64,7 +64,7 @@ setup_alacritty()
 while getopts 't:' arg
 do
     case "${arg}" in
-        't') TERMINAL_TYPE=$OPTARG;;
+        't') TERMINAL_TYPE="$OPTARG";;
         '?') echo "error: ${arg}: invalid argument"; help;;
     esac
 done
