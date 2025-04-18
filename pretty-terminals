@@ -56,7 +56,7 @@ setup_alacritty()
         cp -rv --no-preserve=all "config/alacritty" "${HOME}/.config"
     fi
 
-    "${SHELL}" "./omz install"
+    eval "${SHELL} omz install"
 
     return $?
 }
