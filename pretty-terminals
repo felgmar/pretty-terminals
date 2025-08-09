@@ -3,7 +3,9 @@ set -e
 
 help()
 {
-    echo "Usage: ${0} [-t TERMINAL_TYPE]"
+cat <<EOF
+Usage: ${0} [-t TERMINAL_TYPE]
+EOF
     return 0
 }
 
@@ -61,22 +63,23 @@ setup_alacritty()
     return $?
 }
 
-while getopts 't:' arg
+while getopts 'ht:' arg
 do
     case "${arg}" in
         't') TERMINAL_TYPE="$OPTARG";;
-        '?') echo "error: ${arg}: invalid argument"; help;;
+        'h') help;;
+        ?) echo "error: ${arg}: invalid argument"; help;;
     esac
 done
 
-if test -z "${TERMINAL_TYPE}"
+test -z $1 && help
+
+if test ! -z "${TERMINAL_TYPE}"
 then
-    help
-else
     case "${TERMINAL_TYPE}" in
-        "termux")       setup_termux;;
-        "kitty")        setup_kitty;;
-        "alacritty")    setup_alacritty;;
+        "termux")       setup_termux; exit $?;;
+        "kitty")        setup_kitty; exit $?;;
+        "alacritty")    setup_alacritty; exit $?;;
         *)              echo "error: ${TERMINAL_TYPE}: unknown type of terminal";;
     esac
 fi
