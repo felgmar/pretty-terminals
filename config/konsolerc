@@ -1,0 +1,12 @@
+[Desktop Entry]
+DefaultProfile=Custom.profile
+
+[General]
+ConfigVersion=1
+
+[KonsoleWindow]
+RemoveWindowTitleBarAndFrame=true
+UseSingleInstance=true
+
+[UiSettings]
+ColorScheme=
